@@ -1,67 +1,47 @@
-##Building an APIs
+// server.js
+const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('express').json;
+const app = express();
+const PORT = 3000;
 
-from flask import Flask, request, render_template, jsonify
-from datetime import datetime
-from dotenv import load_dotenv
-import os
-import pymongo
+// Middleware
+app.use(bodyParser());
 
-load_dotenv()  # Load environment variables from .env file
-client = pymongo.MongoClient('mongodb+srv://yashshitole2003:12345@cluster0.vfgpaef.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
-db = client.test
+// MongoDB Connection
+mongoose.connect('mongodb://localhost:27017/todoDB', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'MongoDB connection error:'));
+db.once('open', () => console.log('Connected to MongoDB'));
 
-collection = db['flask-tutorial']
-app = Flask(__name__)
-#first route
-@app.route('/')
+// Mongoose Schema
+const ToDoItem = mongoose.model('ToDoItem', new mongoose.Schema({
+  itemName: String,
+  itemDescription: String,
+}));
 
-def home(): # This is the home route function
-    # Render the index.html template when the home route is accessed
-    day_of_week = datetime.now().strftime('%A')
-    # Get the current day of the week
-    return render_template('index.html', day_of_week=day_of_week)  # Render the index.html template
+// POST /submittodoitem route
+app.post('/submittodoitem', async (req, res) => {
+  const { itemName, itemDescription } = req.body;
 
-#second route- http://127.0.0.1:5000/second
-@app.route('/second')
-def second():
-    return "This is the second page!"
+  if (!itemName || !itemDescription) {
+    return res.status(400).json({ error: 'Both itemName and itemDescription are required.' });
+  }
 
-#1) fetching data from request url 
-@app.route('/third/<name>')
-def third(name):
-    return f"Hello, {name}!"
+  try {
+    const newItem = new ToDoItem({ itemName, itemDescription });
+    await newItem.save();
+    res.status(201).json({ message: 'To-Do item saved successfully.' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to save item to the database.' });
+  }
+});
 
-#2) fetching data from query json- http://127.0.0.1:5000/fourth?name=Yash&age=21
-@app.route('/fourth')
-def fourth():
-    name = request.values.get('name')
-    age = request.values.get('age')
-
-    result = {
-        'name': name,
-        'age': age
-    }
-    return result
-#task
-@app.route('/api')
-def api():
-    name = request.values.get('name')
-    id1 = request.values.get('id1')
-
-    result = {
-        'name': name,
-        'id1': id1
-    }
-    return jsonify(result)
-#submit
-@app.route('/submit', methods=['POST'])
-def submit():
-
-    form_data = dict(request.form)
-    collection.insert_one(form_data)
-    # Insert the form data into the MongoDB collection
-    return "data submitted successfully!"
-    
-if __name__ == '__main__': #run krnyasathi he compulosry ahe
-    app.run(debug=True)  # Run the Flask application in debug mode
-
+// Start server
+app.listen(PORT, () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+});
