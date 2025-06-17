@@ -1,35 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>signup form</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>To-Do Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f3f4f6;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    input, textarea {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px;
+      font-size: 16px;
+      background-color: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #1e40af;
+    }
+
+    .todo-list {
+      margin-top: 20px;
+    }
+
+    .todo-item {
+      background: #f9fafb;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      border-left: 5px solid #2563eb;
+    }
+
+    .todo-item h3 {
+      margin: 0 0 5px 0;
+    }
+
+    .todo-item p {
+      margin: 0;
+    }
+  </style>
 </head>
 <body>
-    <p>Welcome to the signup page</p>  
-    <p>Today is a {{day_of_week}}</p>
-    <form action="/submit" method="post">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required><br><br>
-        
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required><br><br>
-        
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required><br><br>
-        
-        <button type="submit">Sign Up</button>
+
+  <div class="container">
+    <h1>To-Do List</h1>
+    <form id="todoForm">
+      <input type="text" id="itemName" placeholder="Item Name" required />
+      <textarea id="itemDesc" rows="3" placeholder="Item Description" required></textarea>
+      <button type="submit">Add To-Do</button>
     </form>
+
+    <div class="todo-list" id="todoList"></div>
+  </div>
+
+  <script>
+    const todoForm = document.getElementById('todoForm');
+    const todoList = document.getElementById('todoList');
+
+    todoForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const name = document.getElementById('itemName').value.trim();
+      const desc = document.getElementById('itemDesc').value.trim();
+
+      if (name && desc) {
+        const todoItem = document.createElement('div');
+        todoItem.className = 'todo-item';
+        todoItem.innerHTML = `<h3>${name}</h3><p>${desc}</p>`;
+        todoList.appendChild(todoItem);
+
+        // Clear the form
+        todoForm.reset();
+      }
+    });
+  </script>
+
 </body>
-<style>
-    body {
-        background-color: black;
-        font-family: Arial, sans-serif;
-        color:yellow;
-    }
-    p {
-        font-size: 20px;
-        text-align: center;
-        margin-top: 50px;
-    }
 </html>
