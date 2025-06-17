@@ -46,11 +46,11 @@ def fourth():
 @app.route('/api')
 def api():
     name = request.values.get('name')
-    id = request.values.get('id')
+    id1 = request.values.get('id1')
 
     result = {
         'name': name,
-        'id': id
+        'id1': id1
     }
     return jsonify(result)
 #submit
