@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>To-Do Page</title>
+  <title>To-Do Page with UUID</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -72,6 +72,12 @@
     .todo-item p {
       margin: 0;
     }
+
+    .uuid {
+      font-size: 0.85em;
+      color: #555;
+      margin-top: 4px;
+    }
   </style>
 </head>
 <body>
@@ -79,7 +85,6 @@
   <div class="container">
     <h1>To-Do List</h1>
     <form id="todoForm">
-      <input type="text" id="itemId" placeholder="Item ID" required />
       <input type="text" id="itemName" placeholder="Item Name" required />
       <textarea id="itemDesc" rows="3" placeholder="Item Description" required></textarea>
       <button type="submit">Add To-Do</button>
@@ -89,22 +94,31 @@
   </div>
 
   <script>
+    function generateUUID() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0;
+        const v = c === 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+
     const todoForm = document.getElementById('todoForm');
     const todoList = document.getElementById('todoList');
 
     todoForm.addEventListener('submit', function(e) {
       e.preventDefault();
 
-      const id = document.getElementById('itemId').value.trim();
       const name = document.getElementById('itemName').value.trim();
       const desc = document.getElementById('itemDesc').value.trim();
+      const uuid = generateUUID();
 
-      if (id && name && desc) {
+      if (name && desc) {
         const todoItem = document.createElement('div');
         todoItem.className = 'todo-item';
         todoItem.innerHTML = `
-          <h3>${name} <small style="color: #666;">(ID: ${id})</small></h3>
+          <h3>${name}</h3>
           <p>${desc}</p>
+          <div class="uuid">UUID: ${uuid}</div>
         `;
         todoList.appendChild(todoItem);
 
